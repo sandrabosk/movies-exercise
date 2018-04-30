@@ -26,8 +26,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// routes middleware always goes here!
 const index = require('./routes/index');
 app.use('/', index);
+const celebrityRoutes = require('./routes/celebrity-routes');
+app.use('/celebrities', celebrityRoutes);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
