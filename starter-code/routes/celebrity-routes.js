@@ -2,6 +2,33 @@ const express = require('express');
 const celebrityRouter  = express.Router();
 const Celebrity = require("../models/celebrity-model");
 
+
+// search
+//        search?celebSearchTerm=v
+celebrityRouter.get('/search', (req, res, next) => {
+    const searchTerm = req.query.celebSearchTerm;
+    if(!searchTerm){
+        res.render('celebrities/no-search-view.hbs');
+          return;
+    }
+    const searchRegex = new RegExp(searchTerm, 'i');
+    Celebrity.find(
+        // {'name': searchRegex},
+        { $or:[ {'name':searchRegex}, {'occupation':searchRegex}]},
+        (err, searchResults)=>{
+        if(err){
+            next(err);
+            return;
+        }
+        res.render('celebrities/search-result-view.hbs',{
+        results: searchResults
+      });
+    }
+  );
+})
+
+
+
 // DISPLAY ALL THE CELEBRITIES
 // url: localhost:3000/celebrities
 celebrityRouter.get('/', (req, res, next) => {
@@ -98,6 +125,9 @@ celebrityRouter.post('/:theId/delete', (req, res, next) => {
     })
 })
 
+
+
+
 // DETAILS PAGE
 // url: localhost:3000/celebrities/1234567890
 celebrityRouter.get('/:theId', (req, res, next) => {
@@ -112,5 +142,10 @@ celebrityRouter.get('/:theId', (req, res, next) => {
         console.log("Error while getting details: ", error)
     })
 })
+
+
+
+
+
 
 module.exports = celebrityRouter;
